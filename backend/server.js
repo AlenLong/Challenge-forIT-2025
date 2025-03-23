@@ -4,6 +4,9 @@ const express = require("express");
 
 import dotenv from 'dotenv';
 import express from 'express';
+import cors from 'cors';
+
+//const cors = cors;
 
 dotenv.config();
 const app = express();
@@ -11,18 +14,24 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-app.use(express.json()); // Middleware para procesar JSON
+app.use(cors({
+    origin: 'http://localhost:5173',  
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],  
+    allowedHeaders: ['Content-Type'],  
+}));
 
-// Almacenamiento temporal en memoria
+app.use(express.json()); 
+
+
 let tasks = [];
 let idCounter = 1;
 
-// Obtener todas las tareas
+
 app.get("/api/tasks", (req, res) => {
     res.json(tasks);
 });
 
-// Crear una nueva tarea
+// Crear
 app.post("/api/tasks", (req, res) => {
     const { title, description, completed } = req.body;
 
@@ -42,7 +51,7 @@ app.post("/api/tasks", (req, res) => {
     res.status(201).json(newTask);
 });
 
-// Actualizar una tarea existente
+// editar
 app.put("/api/tasks/:id", (req, res) => {
     const { id } = req.params;
     const { title, description, completed } = req.body;
@@ -63,7 +72,7 @@ app.put("/api/tasks/:id", (req, res) => {
 
     res.json(task);
 });
-// Eliminar una tarea
+// Eliminar
 app.delete("/api/tasks/:id", (req, res) => {
     const { id } = req.params;
     const index = tasks.findIndex((t) => t.id === parseInt(id));
@@ -76,7 +85,7 @@ app.delete("/api/tasks/:id", (req, res) => {
     res.status(204).send();
 });
 
-// Manejo de errores global
+// errores
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: "Internal server error" });
