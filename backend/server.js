@@ -31,6 +31,23 @@ app.get("/api/tasks", (req, res) => {
     res.json(tasks);
 });
 
+// Ruta para obtener una tarea por ID
+app.get("/api/tasks/:id", (req, res) => {
+   
+    const taskId = parseInt(req.params.id);
+
+    // Buscar la tarea correspondiente
+    const task = tasks.find(t => t.id === taskId); 
+
+    if (task) {
+        res.json(task); 
+    } else {
+        res.status(404).json({ message: "Task not found" });
+    }
+});
+
+
+
 // Crear
 app.post("/api/tasks", (req, res) => {
     const { title, description, completed } = req.body;

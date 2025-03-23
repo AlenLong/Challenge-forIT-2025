@@ -1,50 +1,74 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { createTask, updateTask, getTasks } from "../api/tasks";
+import { useNavigate, useParams } from "react-router-dom";
+import { createTask, updateTask, getTaskById } from "../api/tasks";
 
 function TaskForm() {
-    const [task, setTask] = useState({ title: "", description: "", completed: false });
-    const { id } = useParams();
-    const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [completed, setCompleted] = useState(false);
+  const navigate = useNavigate();
+  const { id } = useParams();
 
-    useEffect(() => {
-        if (id) {
-            loadTask();
-        }
-    }, [id]);
+  useEffect(() => {
+    if (id) {
+      async function loadTask() {
+        const task = await getTaskById(id);
+        setTitle(task.title);
+        setDescription(task.description);
+        setCompleted(task.completed);
+      }
+      loadTask();
+    }
+  }, [id]);
 
-    const loadTask = async () => {
-        const tasks = await getTasks();
-        const foundTask = tasks.find((t) => t.id === parseInt(id));
-        if (foundTask) setTask(foundTask);
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const task = { title, description, completed };
+    if (id) {
+      await updateTask(id, task);
+    } else {
+      await createTask(task);
+    }
+    navigate("/");
+  };
 
-    const handleChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setTask({ ...task, [name]: type === "checkbox" ? checked : value });
-    };
+const handleCancelClick = (e) => {
+    e.preventDefault();
+    if (id) {
+        navigate(`/task/${id}`);
+    } else{
+    navigate("/");
+    }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (id) {
-            await updateTask(id, task);
-        } else {
-            await createTask(task);
-        }
-        navigate("/");
-    };
+  };
 
-    return (
-        <form onSubmit={handleSubmit}>
-            <input name="title" value={task.title} onChange={handleChange} required />
-            <textarea name="description" value={task.description} onChange={handleChange} />
-            <label>
-                Completado:
-                <input type="checkbox" name="completed" checked={task.completed} onChange={handleChange} />
-            </label>
-            <button type="submit">{id ? "Actualizar" : "Crear"} Tarea</button>
-        </form>
-    );
+  return (
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        required
+      />
+      <textarea
+        placeholder="Description"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <label>
+        Completed:
+        <input
+          type="checkbox"
+          checked={completed}
+          onChange={() => setCompleted(!completed)}
+        />
+      </label>
+      <button onClick={handleCancelClick}>Cancel</button>
+      <button type="submit">Save Task</button>
+    </form>
+  );
 }
 
 export default TaskForm;
+
