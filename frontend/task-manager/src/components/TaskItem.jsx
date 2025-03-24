@@ -33,7 +33,7 @@ function TaskItem() {
   };
 
   return (
-    <div>
+    <div className="task-form">
       <h1>{task.title}</h1>
       <p>{task.description}</p>
       <p>Completed: {task.completed ? "Yes" : "No"}</p>

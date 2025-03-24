@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { createTask, updateTask, getTaskById } from "../api/tasks";
+import "../css/task-form.css";
 
 function TaskForm() {
   const [title, setTitle] = useState("");
@@ -43,7 +44,8 @@ const handleCancelClick = (e) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="task-form" onSubmit={handleSubmit}>
+      <h2>{id ? "Edit Task" : "Create Task"}</h2>
       <input
         type="text"
         placeholder="Title"
@@ -56,16 +58,18 @@ const handleCancelClick = (e) => {
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
-      <label>
-        Completed:
+      <label className="checkbox-label">
         <input
           type="checkbox"
           checked={completed}
           onChange={() => setCompleted(!completed)}
         />
+        Completed
       </label>
-      <button onClick={handleCancelClick}>Cancel</button>
-      <button type="submit">Save Task</button>
+      <div className="buttons">
+        <button className="cancel" onClick={handleCancelClick}>Cancel</button>
+        <button className="save" type="submit">Save Task</button>
+      </div>
     </form>
   );
 }

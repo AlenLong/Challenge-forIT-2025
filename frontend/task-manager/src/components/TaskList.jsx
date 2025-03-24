@@ -14,7 +14,7 @@ function TaskList() {
   }, []);
 
   return (
-    <div>
+    <div className="task-form">
       <h1>Task List</h1>
       <ul>
         {tasks.map((task) => (
